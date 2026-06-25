@@ -1,0 +1,6 @@
+{
+  "name": "Student Roster",
+  "description": "An academic anarchy student roster dashboard featuring neo-brutalist layouts, animated state updates, and dynamic record control.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

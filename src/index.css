@@ -1,0 +1,96 @@
+@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&family=Space+Grotesk:wght@300..700&family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-display: "Bricolage Grotesque", "Space Grotesk", sans-serif;
+  --font-sans: "Space Grotesk", sans-serif;
+  --font-mono: "Space Mono", monospace;
+
+  --color-primary: #f2b2eb;
+  --color-secondary: #c3f400;
+  --color-accent: #f7511c;
+  --color-dark-bg: #131313;
+  --color-surface-container: #20201f;
+  --color-surface-high: #2a2a2a;
+  --color-surface-highest: #353535;
+  --color-error: #ffb4ab;
+}
+
+body {
+  background-color: #131313;
+  color: #e5e2e1;
+  overflow-x: hidden;
+  background-image: radial-gradient(circle at 50% 50%, #20201f 0%, #131313 100%);
+  background-size: 200% 200%;
+  animation: gradientShift 15s ease infinite;
+}
+
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.brutal-border {
+  border: 2px solid #c3f400;
+}
+
+.brutal-border-primary {
+  border: 2px solid #f2b2eb;
+}
+
+.brutal-shadow-primary {
+  box-shadow: 6px 6px 0px 0px #f2b2eb;
+}
+
+.brutal-shadow-secondary {
+  box-shadow: -6px 6px 0px 0px #c3f400;
+}
+
+.brutal-shadow-accent {
+  box-shadow: 4px 4px 0px 0px #f7511c;
+}
+
+.brutal-shadow-dark {
+  box-shadow: 5px 5px 0px 0px #131313;
+}
+
+.input-wobble:hover {
+  transform: rotate(1deg) scale(1.02);
+  transition: transform 0.2s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.btn-pulse:focus {
+  animation: pulse-border 1s infinite;
+}
+
+@keyframes pulse-border {
+  0% { box-shadow: 0 0 0 0 rgba(195, 244, 0, 0.7); }
+  70% { box-shadow: 0 0 0 10px rgba(195, 244, 0, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(195, 244, 0, 0); }
+}
+
+.bouncy-error {
+  animation: bounce 0.5s cubic-bezier(0.36, 0, 0.66, -0.56) infinite alternate;
+}
+
+@keyframes bounce {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-5px); }
+}
+
+/* Custom scrollbar to match the neo-brutalist theme */
+::-webkit-scrollbar {
+  width: 10px;
+}
+::-webkit-scrollbar-track {
+  background: #131313;
+  border-left: 2px solid #20201f;
+}
+::-webkit-scrollbar-thumb {
+  background: #c3f400;
+  border: 2px solid #131313;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #f2b2eb;
+}
