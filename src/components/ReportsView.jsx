@@ -1,14 +1,9 @@
 import { Sparkles, Printer, FileText, FileDown, ShieldAlert, BadgeInfo, BarChart2 } from 'lucide-react';
-import { Student } from '../types';
 import { calculatePercentile } from '../utils';
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, Cell } from 'recharts';
 
-interface ReportsViewProps {
-  students: Student[];
-}
-
 // Custom Tooltip for the Neo-Brutalist look
-const CustomTooltip = ({ active, payload }: any) => {
+const CustomTooltip = ({ active, payload }) => {
   if (active && payload && payload.length) {
     const data = payload[0].payload;
     return (
@@ -22,10 +17,10 @@ const CustomTooltip = ({ active, payload }: any) => {
   return null;
 };
 
-export default function ReportsView({ students }: ReportsViewProps) {
+export default function ReportsView({ students }) {
   
   // Custom funny academic evaluations based on score ranges
-  const getEvaluationComment = (marks: number, name: string) => {
+  const getEvaluationComment = (marks, name) => {
     if (marks >= 90) {
       return `Outstanding academic capability. ${name} exhibits incredible intellectual power, though they frequently demand to rewrite the exam rules on the grounds of existential freedom. Absolute class mastermind.`;
     }
@@ -87,16 +82,16 @@ export default function ReportsView({ students }: ReportsViewProps) {
               <BarChart data={[...students].reverse().map(s => ({ name: s.name, score: s.marks, roll: s.roll }))} margin={{ top: 10, right: 10, left: -20, bottom: 5 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#2a2a2a" />
                 <XAxis 
-                  dataKey="name" 
-                  stroke="#9a8d96" 
-                  tickLine={false}
-                  tick={{ fill: '#e5e2e1', fontSize: 10 }}
+                   dataKey="name" 
+                   stroke="#9a8d96" 
+                   tickLine={false}
+                   tick={{ fill: '#e5e2e1', fontSize: 10 }}
                 />
                 <YAxis 
-                  stroke="#9a8d96" 
-                  domain={[0, 100]}
-                  tickLine={false}
-                  tick={{ fill: '#e5e2e1', fontSize: 10 }}
+                   stroke="#9a8d96" 
+                   domain={[0, 100]}
+                   tickLine={false}
+                   tick={{ fill: '#e5e2e1', fontSize: 10 }}
                 />
                 <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(242, 178, 235, 0.05)' }} />
                 <Bar dataKey="score" radius={[2, 2, 0, 0]} barSize={40}>

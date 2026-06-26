@@ -5,20 +5,19 @@ import StudentsView from './components/StudentsView';
 import PortalView from './components/PortalView';
 import ReportsView from './components/ReportsView';
 import HelpView from './components/HelpView';
-import { Student, ActiveScreen } from './types';
 
 export default function App() {
   // Initially seed with the precise data from the screenshot
-  const [students, setStudents] = useState<Student[]>([
+  const [students, setStudents] = useState([
     { id: '1', roll: '001', name: 'Alice Liddell', marks: 95 },
     { id: '2', roll: '002', name: 'Mad Hatter', marks: 42 }
   ]);
 
-  const [activeScreen, setActiveScreen] = useState<ActiveScreen>('students');
-  const addFormRef = useRef<HTMLFormElement | null>(null);
+  const [activeScreen, setActiveScreen] = useState('students');
+  const addFormRef = useRef(null);
 
-  const handleAddStudent = (newStudent: Omit<Student, 'id'>) => {
-    const studentWithId: Student = {
+  const handleAddStudent = (newStudent) => {
+    const studentWithId = {
       ...newStudent,
       id: Date.now().toString()
     };
@@ -26,19 +25,19 @@ export default function App() {
     setStudents(prev => [studentWithId, ...prev]);
   };
 
-  const handleDeleteStudent = (id: string) => {
+  const handleDeleteStudent = (id) => {
     setStudents(prev => prev.filter(s => s.id !== id));
   };
 
-  const handleUpdateStudent = (id: string, updatedFields: Partial<Student>) => {
+  const handleUpdateStudent = (id, updatedFields) => {
     setStudents(prev => prev.map(s => s.id === id ? { ...s, ...updatedFields } : s));
   };
 
-  const handleUpdateMarks = (id: string, marks: number) => {
+  const handleUpdateMarks = (id, marks) => {
     setStudents(prev => prev.map(s => s.id === id ? { ...s, marks } : s));
   };
 
-  const handleApplyCurve = (amount: number) => {
+  const handleApplyCurve = (amount) => {
     setStudents(prev => prev.map(s => {
       const newMarks = Math.max(0, Math.min(100, s.marks + amount));
       return { ...s, marks: newMarks };

@@ -14,19 +14,12 @@ import {
   CheckCircle2,
   AlertTriangle
 } from 'lucide-react';
-import { Student } from '../types';
 import { calculatePercentile } from '../utils';
 
-interface PortalViewProps {
-  students: Student[];
-  onAddStudent: (student: Omit<Student, 'id'>) => void;
-  onUpdateStudent: (id: string, student: Partial<Student>) => void;
-}
-
-export default function PortalView({ students, onAddStudent, onUpdateStudent }: PortalViewProps) {
+export default function PortalView({ students, onAddStudent, onUpdateStudent }) {
   // Authentication states
   const [isLogin, setIsLogin] = useState(true);
-  const [loggedInStudentId, setLoggedInStudentId] = useState<string | null>(null);
+  const [loggedInStudentId, setLoggedInStudentId] = useState(null);
 
   // Form Inputs
   const [roll, setRoll] = useState('');
@@ -39,14 +32,14 @@ export default function PortalView({ students, onAddStudent, onUpdateStudent }: 
   const [successMsg, setSuccessMsg] = useState('');
 
   // Funny committee review text state
-  const [committeeReview, setCommitteeReview] = useState<string | null>(null);
+  const [committeeReview, setCommitteeReview] = useState(null);
   const [reviewLoading, setReviewLoading] = useState(false);
 
   // Derive current logged-in student
   const loggedInStudent = students.find(s => s.id === loggedInStudentId);
 
   // Handle Login
-  const handleLoginSubmit = (e: React.FormEvent) => {
+  const handleLoginSubmit = (e) => {
     e.preventDefault();
     setErrorMsg('');
     setSuccessMsg('');
@@ -94,7 +87,7 @@ export default function PortalView({ students, onAddStudent, onUpdateStudent }: 
   };
 
   // Handle Signup
-  const handleSignupSubmit = (e: React.FormEvent) => {
+  const handleSignupSubmit = (e) => {
     e.preventDefault();
     setErrorMsg('');
     setSuccessMsg('');
@@ -154,11 +147,6 @@ export default function PortalView({ students, onAddStudent, onUpdateStudent }: 
         password: cleanPassword
       });
 
-      // Find the student we just added (since App.tsx generates Date.now() id, we search by roll)
-      // Since react batch-updates state, we might need a slight delay or search the list.
-      // For immediate UX, find in next render or set a small timeout, or search state.
-      // To be safe, we can trigger active login or find student using setTimeout.
-      // Let's find it or use a fallback of setting loggedInStudentId based on roll matching.
       showSuccess(`Account created successfully! Please log in with your credentials.`);
       setIsLogin(true);
     }
@@ -170,12 +158,12 @@ export default function PortalView({ students, onAddStudent, onUpdateStudent }: 
     setConfirmPassword('');
   };
 
-  const showError = (msg: string) => {
+  const showError = (msg) => {
     setErrorMsg(msg);
     setTimeout(() => setErrorMsg(''), 5000);
   };
 
-  const showSuccess = (msg: string) => {
+  const showSuccess = (msg) => {
     setSuccessMsg(msg);
     setTimeout(() => setSuccessMsg(''), 4000);
   };
@@ -236,7 +224,7 @@ export default function PortalView({ students, onAddStudent, onUpdateStudent }: 
   const currentPercentile = loggedInStudent ? calculatePercentile(loggedInStudent.marks, students) : 0;
 
   // Study Prep advice helper
-  const getAcademicAdvice = (score: number) => {
+  const getAcademicAdvice = (score) => {
     if (score < 50) {
       return {
         vibe: "CRITICAL CHAOS ALERT",

@@ -1,16 +1,10 @@
 import { useState } from 'react';
-import { HelpCircle, ChevronDown, Flame, Compass, HelpCircleIcon, HelpCircle as HelpIcon, Sparkles } from 'lucide-react';
-
-interface FAQItem {
-  question: string;
-  answer: string;
-  category: string;
-}
+import { ChevronDown, Sparkles, HelpCircle as HelpIcon } from 'lucide-react';
 
 export default function HelpView() {
-  const [expandedIndex, setExpandedIndex] = useState<number | null>(0);
+  const [expandedIndex, setExpandedIndex] = useState(0);
 
-  const faqs: FAQItem[] = [
+  const faqs = [
     {
       category: "Operations",
       question: "How do I inject students into the system?",

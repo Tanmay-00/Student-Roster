@@ -1,15 +1,6 @@
 import React, { useState } from 'react';
 import { Trash2, Star, Sparkles, Search, Edit3, X, Check } from 'lucide-react';
-import { Student } from '../types';
 import { calculatePercentile } from '../utils';
-
-interface StudentsViewProps {
-  students: Student[];
-  onAddStudent: (student: Omit<Student, 'id'>) => void;
-  onUpdateStudent: (id: string, student: Partial<Student>) => void;
-  onDeleteStudent: (id: string) => void;
-  addFormRef?: React.RefObject<HTMLFormElement | null>;
-}
 
 export default function StudentsView({
   students,
@@ -17,16 +8,16 @@ export default function StudentsView({
   onUpdateStudent,
   onDeleteStudent,
   addFormRef,
-}: StudentsViewProps) {
+}) {
   const [rollNo, setRollNo] = useState('');
   const [fullName, setFullName] = useState('');
   const [marks, setMarks] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
-  const [deletingId, setDeletingId] = useState<string | null>(null);
-  const [editingStudentId, setEditingStudentId] = useState<string | null>(null);
+  const [deletingId, setDeletingId] = useState(null);
+  const [editingStudentId, setEditingStudentId] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
     
     const cleanRoll = rollNo.trim();
@@ -98,7 +89,7 @@ export default function StudentsView({
     setErrorMsg('');
   };
 
-  const handleStartEdit = (student: Student) => {
+  const handleStartEdit = (student) => {
     setEditingStudentId(student.id);
     setRollNo(student.roll);
     setFullName(student.name);
@@ -121,7 +112,7 @@ export default function StudentsView({
     setErrorMsg('');
   };
 
-  const handleDeleteWithAnimation = (id: string) => {
+  const handleDeleteWithAnimation = (id) => {
     setDeletingId(id);
     setTimeout(() => {
       onDeleteStudent(id);

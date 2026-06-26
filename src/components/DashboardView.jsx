@@ -9,15 +9,9 @@ import {
   AlertTriangle,
   FileSpreadsheet
 } from 'lucide-react';
-import { Student, ChaosMetric, ChaosLog, ActiveScreen } from '../types';
 
-interface DashboardViewProps {
-  students: Student[];
-  setActiveScreen: (screen: ActiveScreen) => void;
-}
-
-export default function DashboardView({ students, setActiveScreen }: DashboardViewProps) {
-  const [logs, setLogs] = useState<ChaosLog[]>([
+export default function DashboardView({ students, setActiveScreen }) {
+  const [logs, setLogs] = useState([
     { id: '1', time: '10:42 AM', event: 'Alice questioned the rules of spatial geometry in geometry class, causing the whiteboard to tilt 15 degrees.', severity: 'moderate' },
     { id: '2', time: '09:15 AM', event: 'Mad Hatter started a tea-brewing operation inside the chemistry bunsen burner zone.', severity: 'catastrophic' },
     { id: '3', time: 'Yesterday', event: 'Chess club attempted to march in L-shapes down the main corridor. Minor collision with lunch trays.', severity: 'mild' },
@@ -44,14 +38,14 @@ export default function DashboardView({ students, setActiveScreen }: DashboardVi
       'Mad Hatter hosted an unscheduled un-birthday party during standard calculus examinations.'
     ];
 
-    const severities: ('mild' | 'moderate' | 'catastrophic')[] = ['mild', 'moderate', 'catastrophic'];
+    const severities = ['mild', 'moderate', 'catastrophic'];
     const randomEvent = events[Math.floor(Math.random() * events.length)];
     const randomSeverity = severities[Math.floor(Math.random() * severities.length)];
     
     const now = new Date();
     const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
-    const newLog: ChaosLog = {
+    const newLog = {
       id: Date.now().toString(),
       time: timeStr,
       event: randomEvent,
@@ -62,7 +56,7 @@ export default function DashboardView({ students, setActiveScreen }: DashboardVi
   };
 
   // Dynamic Metrics
-  const metrics: ChaosMetric[] = [
+  const metrics = [
     {
       title: "Class Average",
       value: `${average}%`,

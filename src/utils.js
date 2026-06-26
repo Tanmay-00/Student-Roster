@@ -1,11 +1,9 @@
-import { Student } from './types';
-
 /**
  * Calculates the percentile score of a student's marks compared to all students.
  * JEE Mains Style Formula:
  * Percentile = (Number of students with marks <= studentMarks) / (Total number of students) * 100
  */
-export function calculatePercentile(studentMarks: number, allStudents: Student[]): number {
+export function calculatePercentile(studentMarks, allStudents) {
   if (allStudents.length === 0) return 0;
   
   const count = allStudents.filter(s => s.marks <= studentMarks).length;

@@ -9,27 +9,19 @@ import {
   Plus,
   LogIn
 } from 'lucide-react';
-import { ActiveScreen } from '../types';
-
-interface SidebarProps {
-  activeScreen: ActiveScreen;
-  setActiveScreen: (screen: ActiveScreen) => void;
-  onAddStudentClick: () => void;
-  studentCount: number;
-}
 
 export default function Sidebar({ 
   activeScreen, 
   setActiveScreen, 
   onAddStudentClick,
   studentCount 
-}: SidebarProps) {
+}) {
   
   const menuItems = [
-    { id: 'dashboard' as ActiveScreen, label: 'Dashboard', icon: LayoutDashboard },
-    { id: 'students' as ActiveScreen, label: 'Students', icon: Users, badge: studentCount },
-    { id: 'reports' as ActiveScreen, label: 'Reports', icon: FileText },
-    { id: 'portal' as ActiveScreen, label: 'Student Portal', icon: LogIn },
+    { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
+    { id: 'students', label: 'Students', icon: Users, badge: studentCount },
+    { id: 'reports', label: 'Reports', icon: FileText },
+    { id: 'portal', label: 'Student Portal', icon: LogIn },
   ];
 
   return (
