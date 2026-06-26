@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { Trash2, Star, Sparkles } from 'lucide-react';
+import { Trash2, Star, Sparkles, Search, Edit3, X, Check } from 'lucide-react';
 import { Student } from '../types';
 import { calculatePercentile } from '../utils';
 
 interface StudentsViewProps {
   students: Student[];
   onAddStudent: (student: Omit<Student, 'id'>) => void;
+  onUpdateStudent: (id: string, student: Partial<Student>) => void;
   onDeleteStudent: (id: string) => void;
   addFormRef?: React.RefObject<HTMLFormElement | null>;
 }
@@ -13,6 +14,7 @@ interface StudentsViewProps {
 export default function StudentsView({
   students,
   onAddStudent,
+  onUpdateStudent,
   onDeleteStudent,
   addFormRef,
 }: StudentsViewProps) {
@@ -21,39 +23,98 @@ export default function StudentsView({
   const [marks, setMarks] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [editingStudentId, setEditingStudentId] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!rollNo.trim() || !fullName.trim() || !marks.trim()) {
-      setErrorMsg('Whoops! Fill all fields.');
-      setTimeout(() => setErrorMsg(''), 3000);
-      return;
-    }
+    
+    const cleanRoll = rollNo.trim();
+    const cleanName = fullName.trim();
+    const cleanMarksStr = marks.trim();
 
-    // Auto-pad roll number if it consists of digits (e.g. "3" -> "003", "12" -> "012") to match stored format
-    let finalRoll = rollNo.trim();
-    if (/^\d+$/.test(finalRoll)) {
-      finalRoll = finalRoll.padStart(3, '0');
-    }
-
-    // Prevent duplicate roll numbers based on the stored data
-    const duplicateExists = students.some(
-      s => s.roll.toLowerCase() === finalRoll.toLowerCase()
-    );
-
-    if (duplicateExists) {
-      setErrorMsg(`Roll No. #${finalRoll} already exists!`);
+    if (!cleanRoll) {
+      setErrorMsg('Roll Number cannot be empty!');
       setTimeout(() => setErrorMsg(''), 4000);
       return;
     }
 
-    onAddStudent({
-      roll: finalRoll,
-      name: fullName.trim(),
-      marks: parseInt(marks, 10) || 0,
-    });
+    if (!cleanName) {
+      setErrorMsg('Full Name cannot be empty!');
+      setTimeout(() => setErrorMsg(''), 4000);
+      return;
+    }
+
+    if (cleanMarksStr === '') {
+      setErrorMsg('Marks field cannot be empty!');
+      setTimeout(() => setErrorMsg(''), 4000);
+      return;
+    }
+
+    // Validate Marks is a numerical value between 0 and 100
+    const parsedMarks = Number(cleanMarksStr);
+    if (isNaN(parsedMarks) || !Number.isInteger(parsedMarks) || parsedMarks < 0 || parsedMarks > 100) {
+      setErrorMsg('Marks must be a whole number between 0 and 100!');
+      setTimeout(() => setErrorMsg(''), 4000);
+      return;
+    }
+
+    // Auto-pad roll number if it consists of digits (e.g. "3" -> "003", "12" -> "012") to match stored format
+    let finalRoll = cleanRoll;
+    if (/^\d+$/.test(finalRoll)) {
+      finalRoll = finalRoll.padStart(3, '0');
+    }
+
+    // Prevent duplicate roll numbers based on the stored data (excluding current editing student)
+    const duplicateExists = students.some(
+      s => (editingStudentId ? s.id !== editingStudentId : true) && s.roll.toLowerCase() === finalRoll.toLowerCase()
+    );
+
+    if (duplicateExists) {
+      setErrorMsg(`Roll No. #${finalRoll} is already assigned to another student!`);
+      setTimeout(() => setErrorMsg(''), 4000);
+      return;
+    }
+
+    if (editingStudentId) {
+      onUpdateStudent(editingStudentId, {
+        roll: finalRoll,
+        name: cleanName,
+        marks: parsedMarks,
+      });
+      setEditingStudentId(null);
+    } else {
+      onAddStudent({
+        roll: finalRoll,
+        name: cleanName,
+        marks: parsedMarks,
+      });
+    }
 
     // Reset Form
+    setRollNo('');
+    setFullName('');
+    setMarks('');
+    setErrorMsg('');
+  };
+
+  const handleStartEdit = (student: Student) => {
+    setEditingStudentId(student.id);
+    setRollNo(student.roll);
+    setFullName(student.name);
+    setMarks(student.marks.toString());
+    setErrorMsg('');
+    
+    // Focus the roll input
+    const rollInput = document.getElementById('student-roll');
+    if (rollInput) {
+      rollInput.focus();
+      rollInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  };
+
+  const handleCancelEdit = () => {
+    setEditingStudentId(null);
     setRollNo('');
     setFullName('');
     setMarks('');
@@ -94,10 +155,12 @@ export default function StudentsView({
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
         
         {/* Left Hand: New Recruit Form Card */}
-        <section className="lg:col-span-5 bg-surface-high p-8 border-2 border-[#f2b2eb] brutal-shadow-secondary transform rotate-1 relative">
+        <section className={`lg:col-span-5 bg-surface-high p-8 border-2 transition-all duration-300 ${
+          editingStudentId ? 'border-[#c3f400] shadow-[0px_0px_20px_rgba(195,244,0,0.15)]' : 'border-[#f2b2eb]'
+        } brutal-shadow-secondary transform rotate-1 relative`}>
           <div className="absolute -top-5 left-4">
             <h3 className="font-display font-black text-3xl text-[#c3f400] bg-[#131313] inline-block px-4 py-1 border-2 border-[#c3f400] transform -skew-x-3 uppercase tracking-wider shadow-[3px_3px_0px_0px_rgba(242,178,235,1)]">
-              New Recruit
+              {editingStudentId ? 'Edit Recruit' : 'New Recruit'}
             </h3>
           </div>
 
@@ -157,24 +220,48 @@ export default function StudentsView({
               </label>
               <input
                 id="student-marks"
-                type="number"
-                min="0"
-                max="100"
+                type="text"
                 value={marks}
-                onChange={(e) => setMarks(e.target.value)}
+                onChange={(e) => {
+                  const filtered = e.target.value.replace(/\D/g, '');
+                  if (filtered !== '') {
+                    const val = parseInt(filtered, 10);
+                    if (val > 100) {
+                      setMarks('100');
+                    } else {
+                      setMarks(filtered);
+                    }
+                  } else {
+                    setMarks('');
+                  }
+                }}
                 placeholder="85"
                 className="bg-[#3e103f] border-2 border-[#9a8d96] text-[#f2b2eb] placeholder-purple-300/40 p-3 font-mono text-sm rounded input-wobble focus:border-[#c3f400] focus:outline-none focus:ring-0 transition-colors"
               />
             </div>
 
-            {/* Submit Button */}
-            <button
-              id="inject-student-btn"
-              type="submit"
-              className="mt-4 bg-[#f2b2eb] text-[#340636] border-2 border-[#340636] font-display font-black text-lg py-3.5 rounded transform -skew-x-6 hover:skew-x-0 brutal-shadow-dark hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all btn-pulse cursor-pointer"
-            >
-              Inject Data
-            </button>
+            {/* Submit & Reset Button block */}
+            <div className="flex flex-col gap-3 mt-4">
+              <button
+                id="inject-student-btn"
+                type="submit"
+                className={`w-full bg-[#f2b2eb] text-[#340636] border-2 border-[#340636] font-display font-black text-lg py-3.5 rounded transform -skew-x-6 hover:skew-x-0 brutal-shadow-dark hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all cursor-pointer ${
+                  editingStudentId ? 'bg-[#c3f400] text-[#131313] hover:bg-[#b0dd00]' : 'btn-pulse'
+                }`}
+              >
+                {editingStudentId ? 'Save Changes' : 'Inject Data'}
+              </button>
+
+              {editingStudentId && (
+                <button
+                  type="button"
+                  onClick={handleCancelEdit}
+                  className="w-full bg-[#131313] text-red-400 border-2 border-red-400 font-mono text-xs py-2 rounded hover:bg-red-400 hover:text-black hover:border-black transition-all cursor-pointer"
+                >
+                  Cancel Edit
+                </button>
+              )}
+            </div>
           </form>
 
           {/* Decorative spinning star medallion */}
@@ -185,13 +272,36 @@ export default function StudentsView({
 
         {/* Right Hand: The Roster List Container */}
         <section className="lg:col-span-7 flex flex-col gap-5">
-          <div className="flex justify-between items-center mb-1 pl-2">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-1 pl-2">
             <h3 className="font-display font-bold text-3xl text-white">The Roster</h3>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-3">
               <span className="bg-[#ffd6f8] text-[#340636] font-mono text-xs font-bold px-3 py-1 border border-black rounded shadow-[2px_2px_0px_0px_#c3f400] transform skew-x-6">
                 Total: {students.length}
               </span>
             </div>
+          </div>
+
+          {/* Real-time Search Bar */}
+          <div className="relative w-full mb-2">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <Search className="h-4 w-4 text-[#f2b2eb]" />
+            </div>
+            <input
+              type="text"
+              placeholder="Search by Name or Roll No..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full bg-[#1e1e1e] border-2 border-[#9a8d96] text-white placeholder-gray-500 py-2.5 pl-10 pr-10 font-mono text-sm rounded focus:border-[#c3f400] focus:outline-none focus:ring-0 transition-colors shadow-[2px_2px_0px_0px_rgba(242,178,235,0.4)]"
+            />
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery('')}
+                className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-white"
+                title="Clear Search"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            )}
           </div>
 
           {/* Student Roster Cards */}
@@ -201,8 +311,23 @@ export default function StudentsView({
                 <p className="font-display font-bold text-xl text-[#f2b2eb] mb-2">The roster is empty.</p>
                 <p className="font-mono text-xs text-gray-400">Chaos index is critical. Recruit new brains immediately!</p>
               </div>
-            ) : (
-              students.map((student, index) => {
+            ) : (() => {
+              const query = searchQuery.toLowerCase().trim();
+              const filteredStudents = students.filter(student => 
+                student.name.toLowerCase().includes(query) ||
+                student.roll.toLowerCase().includes(query)
+              );
+
+              if (filteredStudents.length === 0) {
+                return (
+                  <div className="bg-surface-container p-10 border-2 border-dashed border-red-400 text-center rounded transform rotate-1 brutal-shadow-secondary">
+                    <p className="font-display font-bold text-xl text-red-400 mb-2">No matching brains found.</p>
+                    <p className="font-mono text-xs text-gray-400">Try searching for a different name or roll number, or click clear!</p>
+                  </div>
+                );
+              }
+
+              return filteredStudents.map((student, index) => {
                 const isEven = index % 2 === 0;
                 const offsetClass = isEven ? 'md:ml-6' : 'md:mr-6';
                 const rotateClass = isEven ? 'rotate-1' : '-rotate-1';
@@ -260,18 +385,33 @@ export default function StudentsView({
                       </div>
                     </div>
 
-                    <button
-                      id={`delete-student-btn-${student.id}`}
-                      onClick={() => handleDeleteWithAnimation(student.id)}
-                      className="bg-[#131313] border-2 border-red-400 text-red-400 p-2.5 hover:bg-red-500 hover:text-black hover:border-black rounded transition-colors transform rotate-3 hover:rotate-0 flex items-center justify-center cursor-pointer shadow-[2px_2px_0px_0px_#f2b2eb]"
-                      title="Annihilate record"
-                    >
-                      <Trash2 className="w-5 h-5" />
-                    </button>
+                    <div className="flex items-center gap-2">
+                      <button
+                        id={`edit-student-btn-${student.id}`}
+                        onClick={() => handleStartEdit(student)}
+                        className={`p-2.5 border-2 rounded transition-colors transform -rotate-3 hover:rotate-0 flex items-center justify-center cursor-pointer shadow-[2px_2px_0px_0px_#c3f400] ${
+                          editingStudentId === student.id
+                            ? 'bg-[#c3f400] border-black text-black'
+                            : 'bg-[#131313] border-[#f2b2eb] text-[#f2b2eb] hover:bg-[#f2b2eb] hover:text-[#340636]'
+                        }`}
+                        title="Edit Student Record"
+                      >
+                        <Edit3 className="w-5 h-5" />
+                      </button>
+
+                      <button
+                        id={`delete-student-btn-${student.id}`}
+                        onClick={() => handleDeleteWithAnimation(student.id)}
+                        className="bg-[#131313] border-2 border-red-400 text-red-400 p-2.5 hover:bg-red-500 hover:text-black hover:border-black rounded transition-colors transform rotate-3 hover:rotate-0 flex items-center justify-center cursor-pointer shadow-[2px_2px_0px_0px_#f2b2eb]"
+                        title="Annihilate record"
+                      >
+                        <Trash2 className="w-5 h-5" />
+                      </button>
+                    </div>
                   </div>
                 );
-              })
-            )}
+              });
+            })()}
           </div>
         </section>
       </div>

@@ -2,7 +2,7 @@ import { useState, useRef } from 'react';
 import Sidebar from './components/Sidebar';
 import DashboardView from './components/DashboardView';
 import StudentsView from './components/StudentsView';
-import GradesView from './components/GradesView';
+import PortalView from './components/PortalView';
 import ReportsView from './components/ReportsView';
 import HelpView from './components/HelpView';
 import { Student, ActiveScreen } from './types';
@@ -28,6 +28,10 @@ export default function App() {
 
   const handleDeleteStudent = (id: string) => {
     setStudents(prev => prev.filter(s => s.id !== id));
+  };
+
+  const handleUpdateStudent = (id: string, updatedFields: Partial<Student>) => {
+    setStudents(prev => prev.map(s => s.id === id ? { ...s, ...updatedFields } : s));
   };
 
   const handleUpdateMarks = (id: string, marks: number) => {
@@ -63,16 +67,17 @@ export default function App() {
           <StudentsView 
             students={students} 
             onAddStudent={handleAddStudent} 
+            onUpdateStudent={handleUpdateStudent}
             onDeleteStudent={handleDeleteStudent}
             addFormRef={addFormRef}
           />
         );
-      case 'grades':
+      case 'portal':
         return (
-          <GradesView 
+          <PortalView 
             students={students} 
-            onUpdateMarks={handleUpdateMarks} 
-            onApplyCurve={handleApplyCurve} 
+            onAddStudent={handleAddStudent} 
+            onUpdateStudent={handleUpdateStudent} 
           />
         );
       case 'reports':
@@ -80,7 +85,14 @@ export default function App() {
       case 'help':
         return <HelpView />;
       default:
-        return <StudentsView students={students} onAddStudent={handleAddStudent} onDeleteStudent={handleDeleteStudent} />;
+        return (
+          <StudentsView 
+            students={students} 
+            onAddStudent={handleAddStudent} 
+            onUpdateStudent={handleUpdateStudent}
+            onDeleteStudent={handleDeleteStudent} 
+          />
+        );
     }
   };
 

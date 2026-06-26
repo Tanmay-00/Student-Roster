@@ -9,11 +9,11 @@ import {
   AlertTriangle,
   FileSpreadsheet
 } from 'lucide-react';
-import { Student, ChaosMetric, ChaosLog } from '../types';
+import { Student, ChaosMetric, ChaosLog, ActiveScreen } from '../types';
 
 interface DashboardViewProps {
   students: Student[];
-  setActiveScreen: (screen: 'dashboard' | 'students' | 'grades' | 'reports' | 'help') => void;
+  setActiveScreen: (screen: ActiveScreen) => void;
 }
 
 export default function DashboardView({ students, setActiveScreen }: DashboardViewProps) {
@@ -215,13 +215,13 @@ export default function DashboardView({ students, setActiveScreen }: DashboardVi
             </button>
 
             <button 
-              id="goto-grades-btn"
-              onClick={() => setActiveScreen('grades')}
+              id="goto-portal-btn"
+              onClick={() => setActiveScreen('portal')}
               className="w-full bg-[#20201f] border-2 border-gray-700 text-gray-300 hover:border-[#f2b2eb] hover:text-[#f2b2eb] text-left p-4 rounded flex justify-between items-center transition-all hover:translate-x-1 cursor-pointer"
             >
-              <span>Evaluate Grade Sheets</span>
+              <span>Student Portal Login &amp; Stats</span>
               <span className="bg-black/40 text-purple-400 px-2 py-0.5 rounded border border-purple-500/30">
-                EDIT
+                PORTAL
               </span>
             </button>
 

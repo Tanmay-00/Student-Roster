@@ -5,9 +5,10 @@ export interface Student {
   marks: number;
   tags?: string[];
   notes?: string;
+  password?: string;
 }
 
-export type ActiveScreen = 'dashboard' | 'students' | 'grades' | 'reports' | 'help';
+export type ActiveScreen = 'dashboard' | 'students' | 'portal' | 'reports' | 'help';
 
 export interface ChaosMetric {
   title: string;

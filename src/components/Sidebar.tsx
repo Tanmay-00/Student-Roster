@@ -6,7 +6,8 @@ import {
   FileText, 
   HelpCircle, 
   LogOut,
-  Plus
+  Plus,
+  LogIn
 } from 'lucide-react';
 import { ActiveScreen } from '../types';
 
@@ -27,8 +28,8 @@ export default function Sidebar({
   const menuItems = [
     { id: 'dashboard' as ActiveScreen, label: 'Dashboard', icon: LayoutDashboard },
     { id: 'students' as ActiveScreen, label: 'Students', icon: Users, badge: studentCount },
-    { id: 'grades' as ActiveScreen, label: 'Grades', icon: Award },
     { id: 'reports' as ActiveScreen, label: 'Reports', icon: FileText },
+    { id: 'portal' as ActiveScreen, label: 'Student Portal', icon: LogIn },
   ];
 
   return (
